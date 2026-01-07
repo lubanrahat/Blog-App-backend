@@ -5,6 +5,11 @@ const envSchema = z.object({
   CLIENT_URL: z.string().url(),
   BETTER_AUTH_SECRET: z.string(),
   BASE_URL: z.string().url(),
+  MAILTRAP_HOST: z.string(),
+  MAILTRAP_PORT: z.string(),
+  MAILTRAP_USER: z.string(),
+  MAILTRAP_PASS: z.string(),
+
 });
 
 function createEnv(env: NodeJS.ProcessEnv) {

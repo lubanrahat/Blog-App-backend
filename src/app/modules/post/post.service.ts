@@ -1,15 +1,9 @@
 import { prisma } from "../../lib/prisma";
-
-interface CreatePostInput {
-  title: string;
-  content: string;
-  tags: string[];
-  authorId: string;
-}
+import type { CreatePostInput } from "../../types/post.types";
 
 class PostService {
   public async createPost(payload: CreatePostInput) {
-    
+
     const { title, content, tags, authorId } = payload;
 
     const newPost = await prisma.post.create({

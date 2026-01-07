@@ -20,7 +20,7 @@ model Post {
   thumbnail  String?
   idFeatured Boolean    @default(false)
   status     PostStatus @default(PUBLISHED)
-  tags        String[]
+  tags       String[]
   views      Int        @default(0)
   authorId   String
   createdAt  DateTime   @default(now())
@@ -70,6 +70,10 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+
+  role   String? @default("USER")
+  phone  String?
+  status String? @default("ACTIVE")
 
   @@unique([email])
   @@map("user")
