@@ -2,6 +2,8 @@ import express, { type Application } from "express";
 import registerHealthRoutes from "./modules/health/health.routes";
 import cors from "cors";
 import { env } from "./config/env";
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "./lib/auth";
 
 function createApp(): Application {
   const app: Application = express();
@@ -17,6 +19,7 @@ function createApp(): Application {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  app.all('/api/auth/*splat', toNodeHandler(auth));
   app.use("/api/v1/health", registerHealthRoutes());
 
   return app;
