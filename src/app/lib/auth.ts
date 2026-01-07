@@ -10,7 +10,25 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  baseURL: env?.BETTER_AUTH_URL ?? "http://localhost:3000",
+  baseURL: env?.BASE_URL,
+  trustedOrigins: [env?.BASE_URL, env?.CLIENT_URL],
   secret: env?.BETTER_AUTH_SECRET,
-  trustedOrigins: [env?.CLIENT_URL],
+  advanced: {
+    generateId: false,
+    cookiePrefix: "blog-app",
+    disableOriginCheck: true,
+  },
+  account: {
+    accountLinking: {
+      enabled: false,
+    },
+  },
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // 1 day
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60, // 5 minutes
+    },
+  },
 });

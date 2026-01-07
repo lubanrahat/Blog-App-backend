@@ -4,7 +4,7 @@ const envSchema = z.object({
   PORT: z.string().optional(),
   CLIENT_URL: z.string().url(),
   BETTER_AUTH_SECRET: z.string(),
-  BETTER_AUTH_URL: z.string().url(),
+  BASE_URL: z.string().url(),
 });
 
 function createEnv(env: NodeJS.ProcessEnv) {

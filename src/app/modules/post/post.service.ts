@@ -1,21 +1,28 @@
-interface Post {
+import { prisma } from "../../lib/prisma";
+
+interface CreatePostInput {
   title: string;
   content: string;
   tags: string[];
-  userId: number;
+  authorId: string;
 }
-class PostService {
-  public createPost(post: Post) {
-    const {title, content, tags, userId} = post;
-    if(!title || !content || !tags || !userId) {
-      throw new Error("Missing required fields");
-    }
 
-    const newPost = {
-      title,
-      content,
-      tags,
-      userId,
-    }
+class PostService {
+  public async createPost(payload: CreatePostInput) {
+    
+    const { title, content, tags, authorId } = payload;
+
+    const newPost = await prisma.post.create({
+      data: {
+        title,
+        content,
+        tags,
+        authorId,
+      },
+    });
+
+    return newPost;
   }
 }
+
+export const postService = new PostService();
