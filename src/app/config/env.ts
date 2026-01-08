@@ -11,7 +11,9 @@ const envSchema = z.object({
   MAILTRAP_PASS: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
-
+  ADMIN_NAME: z.string(),
+  ADMIN_EMAIL: z.string().email(),
+  ADMIN_PASSWORD: z.string(),
 });
 
 function createEnv(env: NodeJS.ProcessEnv) {

@@ -84,6 +84,7 @@ class PostService {
 
     return posts;
   }
+  
 }
 
 export const postService = new PostService();

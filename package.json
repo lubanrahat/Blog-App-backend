@@ -10,7 +10,8 @@
     "tsx": "^4.21.0"
   },
   "scripts": {
-    "dev": "bun --watch src/server.ts"
+    "dev": "bun --watch src/server.ts",
+    "seed:admin": "bun src/app/script/seedAdmin.ts"
   },
   "peerDependencies": {
     "typescript": "^5"
