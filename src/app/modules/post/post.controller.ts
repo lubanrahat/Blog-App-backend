@@ -1,9 +1,16 @@
 import type { Request, Response } from "express";
 import { postService } from "./post.service";
-import { createPostSchema } from "./post.validation";
+import { createPostSchema } from "../../validation/post.validation";
 
 class PostController {
   public async createPost(req: Request, res: Response): Promise<Response> {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
     const result = createPostSchema.safeParse(req.body);
 
     if (!result.success) {
@@ -15,7 +22,7 @@ class PostController {
     }
 
     try {
-      const post = await postService.createPost(req.body);
+      const post = await postService.createPost(req.body, req.user.id);
 
       return res.status(201).json({
         success: true,

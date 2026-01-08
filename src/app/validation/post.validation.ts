@@ -12,11 +12,7 @@ export const createPostSchema = z.object({
 
   tags: z
     .array(z.string().min(1))
-    .min(1, "At least one tag is required"),
-
-  authorId: z
-    .string()
-    .min(1, "Author ID is required"),
+    .min(1, "At least one tag is required")
 });
 
 export type CreatePostInput = z.infer<typeof createPostSchema>;

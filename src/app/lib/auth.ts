@@ -32,6 +32,8 @@ export const auth = betterAuth({
     requireEmailVerification: true,
   },
   emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url, token }, request) => {
       if (!user?.email) {
         throw new Error("User email is required for email verification");
@@ -44,7 +46,15 @@ export const auth = betterAuth({
           user.name,
           verificationUrl
         ),
-      })
+      });
+    },
+  },
+  socialProviders: {
+    google: {
+      prompt: "select_account consent",
+      accessType: "offline",
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
     },
   },
   baseURL: env?.BASE_URL,

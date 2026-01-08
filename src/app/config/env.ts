@@ -9,6 +9,8 @@ const envSchema = z.object({
   MAILTRAP_PORT: z.string(),
   MAILTRAP_USER: z.string(),
   MAILTRAP_PASS: z.string(),
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
 
 });
 
