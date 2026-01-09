@@ -59,14 +59,21 @@ class PostController {
           ? (statusParam as PostStatus)
           : undefined;
 
-      const authorId = req.query.authorId as string | undefined;    
+      const authorId = req.query.authorId as string | undefined;
+
+      const page = Number(req.query.page as string) || 1;
+      const limit = Number(req.query.limit as string) || 10;
+      const skip = (page - 1) * limit;
 
       const posts = await postService.getAllPosts(
         search,
         tags,
         isFeatured,
         status,
-        authorId
+        authorId,
+        page,
+        limit,
+        skip
       );
 
       return res.status(200).json({

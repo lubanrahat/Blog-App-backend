@@ -24,7 +24,10 @@ class PostService {
     tags?: string[],
     idFeatured?: boolean | undefined,
     status?: PostStatus | undefined,
-    authorId?: string | undefined
+    authorId?: string | undefined,
+    page?: number,
+    limit?: number,
+    skip?: number
   ) {
     const andConditions: PostWhereInput[] = [];
 
@@ -79,6 +82,8 @@ class PostService {
     }
 
     const posts = await prisma.post.findMany({
+      take: limit,
+      skip: skip,
       where: andConditions.length > 0 ? { AND: andConditions } : {},
     });
 
