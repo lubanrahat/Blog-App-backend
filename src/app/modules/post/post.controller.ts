@@ -94,6 +94,30 @@ class PostController {
       });
     }
   }
+
+  public async getSinglePost(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        return res.status(400).json({
+          success: false,
+          message: "Post id is required",
+        });
+      }
+      const post = await postService.getSinglePost(id as string);
+
+      return res.status(200).json({
+        success: true,
+        message: "Post fetched successfully",
+        data: post,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message || "Failed to fetch post",
+      });
+    }
+  }
 }
 
 export const postController = new PostController();

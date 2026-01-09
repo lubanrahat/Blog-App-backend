@@ -106,6 +106,16 @@ class PostService {
       },
     };
   }
+
+  public async getSinglePost(postId: string) {
+    const post = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+    });
+
+    return post;
+  }
 }
 
 export const postService = new PostService();

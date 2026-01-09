@@ -6,8 +6,9 @@ import type { UserRole } from "../../types/userRole.types";
 export default function registerPostRoutes(): Router {
   const router = express.Router();
 
-
   router.get("/", postController.getAllPosts.bind(postController));
+
+  router.get("/:id", postController.getSinglePost.bind(postController));
 
   router.post(
     "/",
