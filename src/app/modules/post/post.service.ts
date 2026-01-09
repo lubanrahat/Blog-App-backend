@@ -27,7 +27,9 @@ class PostService {
     authorId?: string | undefined,
     page?: number,
     limit?: number,
-    skip?: number
+    skip?: number,
+    sortBy?: string | undefined,
+    sortOrder?: "asc" | "desc"
   ) {
     const andConditions: PostWhereInput[] = [];
 
@@ -85,11 +87,25 @@ class PostService {
       take: limit,
       skip: skip,
       where: andConditions.length > 0 ? { AND: andConditions } : {},
+      orderBy: {
+        [sortBy || "createdAt"]: sortOrder || "desc",
+      },
     });
 
-    return posts;
+    const count = await prisma.post.count({
+      where: andConditions.length > 0 ? { AND: andConditions } : {},
+    });
+
+    return {
+      data: posts,
+      pagination: {
+        total: count,
+        page,
+        limit,
+        totalPages: Math.ceil(count / (limit || 1)),
+      },
+    };
   }
-  
 }
 
 export const postService = new PostService();

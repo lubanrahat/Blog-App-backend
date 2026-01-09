@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { postService } from "./post.service";
 import { createPostSchema } from "../../validation/post.validation";
 import { PostStatus } from "../../../../generated/prisma/enums";
+import paginationSortingHelper from "../../helpers/paginationSortingHelper";
 
 class PostController {
   public async createPost(req: Request, res: Response): Promise<Response> {
@@ -61,9 +62,12 @@ class PostController {
 
       const authorId = req.query.authorId as string | undefined;
 
-      const page = Number(req.query.page as string) || 1;
-      const limit = Number(req.query.limit as string) || 10;
-      const skip = (page - 1) * limit;
+      const paginationOptions = paginationSortingHelper({
+        page: req.body.page != null ? Number(req.body.page) : undefined,
+        limit: req.body.limit != null ? Number(req.body.limit) : undefined,
+        sortBy: req.body.sortBy,
+        sortOrder: req.body.sortOrder,
+      });
 
       const posts = await postService.getAllPosts(
         search,
@@ -71,9 +75,11 @@ class PostController {
         isFeatured,
         status,
         authorId,
-        page,
-        limit,
-        skip
+        paginationOptions.page,
+        paginationOptions.limit,
+        paginationOptions.skip,
+        paginationOptions.sortBy,
+        paginationOptions.sortOrder
       );
 
       return res.status(200).json({
