@@ -174,6 +174,36 @@ class PostService {
       return post;
     });
   }
+
+  public async getMyPosts(authorId: string) {
+    const author = await prisma.user.findUnique({
+      where: {
+        id: authorId
+      },
+    });
+    if (!author) {
+      throw new Error("Author not found");
+    }
+    if(author.status !== "ACTIVE") {
+      throw new Error("User must be Active")
+    } 
+    return await prisma.post.findMany({
+      where: {
+        authorId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        _count: {
+          select: {
+            comments: true
+          }
+        }
+      }
+    });
+
+  }
 }
 
 export const postService = new PostService();
