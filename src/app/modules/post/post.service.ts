@@ -1,4 +1,7 @@
-import type { PostStatus } from "../../../../generated/prisma/enums";
+import {
+  CommentStatus,
+  type PostStatus,
+} from "../../../../generated/prisma/enums";
 import type { PostWhereInput } from "../../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
 import type { CreatePostInput } from "../../types/post.types";
@@ -90,6 +93,13 @@ class PostService {
       orderBy: {
         [sortBy || "createdAt"]: sortOrder || "desc",
       },
+      include: {
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
+      },
     });
 
     const count = await prisma.post.count({
@@ -122,6 +132,42 @@ class PostService {
       const post = await tx.post.findUnique({
         where: {
           id: postId,
+        },
+        include: {
+          comments: {
+            where: {
+              parentId: null,
+              status: CommentStatus.APPROVED,
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+            include: {
+              replies: {
+                where: {
+                  status: CommentStatus.APPROVED,
+                },
+                orderBy: {
+                  createdAt: "desc",
+                },
+                include: {
+                  replies: {
+                    where: {
+                      status: CommentStatus.APPROVED,
+                    },
+                    orderBy: {
+                      createdAt: "desc",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
+            },
+          }
         },
       });
 

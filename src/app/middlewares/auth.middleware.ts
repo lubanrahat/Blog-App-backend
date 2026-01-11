@@ -9,8 +9,6 @@ export const authMiddleware = (...roles: UserRole[]) => {
         headers: req.headers,
       });
 
-      console.log("Auth middleware session:", session);
-
       if (!session) {
         return res.status(401).json({
           success: false,
