@@ -3,6 +3,7 @@ import { postService } from "./post.service";
 import { createPostSchema } from "../../validation/post.validation";
 import { PostStatus } from "../../../../generated/prisma/enums";
 import paginationSortingHelper from "../../helpers/paginationSortingHelper";
+import { UserRole } from "../../types/userRole.types";
 
 class PostController {
   public async createPost(req: Request, res: Response): Promise<Response> {
@@ -139,6 +140,79 @@ class PostController {
       return res.status(400).json({
         success: false,
         message: error.message || "Failed to fetch posts",
+      });
+    }
+  }
+
+  public async updatePost(req: Request, res: Response): Promise<Response> {
+    try {
+      const { postId } = req.params;
+      if (!postId) {
+        return res.status(400).json({
+          success: false,
+          message: "Post id is required",
+        });
+      }
+
+      const isAdmin = req.user?.role === UserRole.ADMIN;
+
+      if (!isAdmin) {
+        return res.status(401).json({
+          success: false,
+          message: "Unauthorized",
+        });
+      } 
+
+      const posts = await postService.updatePost(
+        postId,
+        req.body,
+        req.user?.id as string,
+        isAdmin
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: "Posts updated successfully",
+        data: posts,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message || "Failed to updated posts",
+      });
+    }
+  }
+
+  public async deletePost(req: Request, res: Response): Promise<Response> {
+    try {
+      const { postId } = req.params;
+      if (!postId) {
+        return res.status(400).json({
+          success: false,
+          message: "Post id is required",
+        });
+      }
+
+      const isAdmin = req.user?.role === UserRole.ADMIN;
+
+      if (!isAdmin) {
+        return res.status(401).json({
+          success: false,
+          message: "Unauthorized",
+        });
+      } 
+
+      const posts = await postService.deletePost(postId, req.user?.id as string, isAdmin);
+
+      return res.status(200).json({
+        success: true,
+        message: "Posts deleted successfully",
+        data: posts,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message || "Failed to delete posts",
       });
     }
   }

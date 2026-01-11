@@ -1,3 +1,4 @@
+import type { Post } from "../../../../generated/prisma/browser";
 import {
   CommentStatus,
   type PostStatus,
@@ -167,7 +168,7 @@ class PostService {
             select: {
               comments: true,
             },
-          }
+          },
         },
       });
 
@@ -178,15 +179,15 @@ class PostService {
   public async getMyPosts(authorId: string) {
     const author = await prisma.user.findUnique({
       where: {
-        id: authorId
+        id: authorId,
       },
     });
     if (!author) {
       throw new Error("Author not found");
     }
-    if(author.status !== "ACTIVE") {
-      throw new Error("User must be Active")
-    } 
+    if (author.status !== "ACTIVE") {
+      throw new Error("User must be Active");
+    }
     return await prisma.post.findMany({
       where: {
         authorId,
@@ -197,13 +198,68 @@ class PostService {
       include: {
         _count: {
           select: {
-            comments: true
-          }
-        }
-      }
+            comments: true,
+          },
+        },
+      },
     });
-
   }
+
+  public async updatePost(
+    postId: string,
+    payload: Partial<Post>,
+    authorId: string,
+    isAdmin: Boolean
+  ) {
+    const post = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+      select: {
+        id: true,
+        authorId: true,
+      },
+    });
+    if (!post) {
+      throw new Error("Post not found");
+    }
+    if (!isAdmin && post.authorId !== authorId) {
+      throw new Error("You are not authorized to update this post");
+    }
+    if(!isAdmin) {
+      delete payload.idFeatured
+    }
+    return await prisma.post.update({
+      where: {
+        id: postId,
+      },
+      data: payload,
+    });
+  }
+
+  public async deletePost(postId: string, authorId: string, isAdmin: Boolean) {
+    const post = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+      select: {
+        id: true,
+        authorId: true,
+      },
+    });
+    if (!post) {
+      throw new Error("Post not found");
+    }
+    if (!isAdmin && post.authorId !== authorId) {
+      throw new Error("You are not authorized to delete this post");
+    }
+    return await prisma.post.delete({
+      where: {
+        id: postId,
+      },
+    });
+  }
+  
 }
 
 export const postService = new PostService();

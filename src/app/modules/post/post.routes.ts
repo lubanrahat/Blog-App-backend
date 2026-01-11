@@ -22,5 +22,17 @@ export default function registerPostRoutes(): Router {
     postController.createPost.bind(postController)
   );
 
+  router.put(
+    "/:postId",
+    authMiddleware("USER" as UserRole, "ADMIN" as UserRole),
+    postController.updatePost.bind(postController)
+  );
+
+  router.delete(
+    "/:postId",
+    authMiddleware("USER" as UserRole, "ADMIN" as UserRole),
+    postController.deletePost.bind(postController)
+  );
+
   return router;
 }
