@@ -216,6 +216,23 @@ class PostController {
       });
     }
   }
+
+  public async getStaticPosts(req: Request, res: Response): Promise<Response> {
+    try {
+      const posts = await postService.getStaticPosts();
+
+      return res.status(200).json({
+        success: true,
+        message: "Posts fetched successfully",
+        data: posts,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message || "Failed to fetch posts",
+      });
+    }
+  }
 }
 
 export const postController = new PostController();

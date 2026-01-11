@@ -120,6 +120,16 @@ class PostService {
 
   public async getSinglePost(postId: string) {
     return await prisma.$transaction(async (tx) => {
+      const post = await tx.post.findUnique({
+        where: {
+          id: postId,
+        },
+      });
+
+      if (!post) {
+        throw new Error("Post not found");
+      }
+
       await tx.post.update({
         where: {
           id: postId,
@@ -130,7 +140,8 @@ class PostService {
           },
         },
       });
-      const post = await tx.post.findUnique({
+
+      const updatedPost = await tx.post.findUnique({
         where: {
           id: postId,
         },
@@ -172,7 +183,7 @@ class PostService {
         },
       });
 
-      return post;
+      return updatedPost;
     });
   }
 
@@ -226,8 +237,8 @@ class PostService {
     if (!isAdmin && post.authorId !== authorId) {
       throw new Error("You are not authorized to update this post");
     }
-    if(!isAdmin) {
-      delete payload.idFeatured
+    if (!isAdmin) {
+      delete payload.idFeatured;
     }
     return await prisma.post.update({
       where: {
@@ -259,7 +270,58 @@ class PostService {
       },
     });
   }
-  
+
+  public async getStaticPosts() {
+    return await prisma.$transaction(async (tx) => {
+      const [
+        totalPosts,
+        publishedPosts,
+        archivedPosts,
+        draftPosts,
+        totalComments,
+        totalUsers,
+        totalAdmins,
+        totalNormalUsers,
+        totalViews,
+      ] = await Promise.all([
+        tx.post.count(),
+        tx.post.count({
+          where: { status: "PUBLISHED" },
+        }),
+        tx.post.count({
+          where: { status: "ARCHIVED" },
+        }),
+        tx.post.count({
+          where: { status: "DRAFT" },
+        }),
+        tx.comment.count(),
+        tx.user.count(),
+        tx.user.count({
+          where: { role: "ADMIN" },
+        }),
+        tx.user.count({
+          where: { role: "USER" },
+        }),
+        tx.post.aggregate({
+          _sum: {
+            views: true,
+          },
+        }),
+      ]);
+
+      return {
+        totalPosts,
+        publishedPosts,
+        archivedPosts,
+        draftPosts,
+        totalComments,
+        totalUsers,
+        totalAdmins,
+        totalNormalUsers,
+        totalViews: totalViews._sum?.views || 0,
+      };
+    });
+  }
 }
 
 export const postService = new PostService();

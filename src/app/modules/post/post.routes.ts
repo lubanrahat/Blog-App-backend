@@ -8,13 +8,19 @@ export default function registerPostRoutes(): Router {
 
   router.get("/", postController.getAllPosts.bind(postController));
 
-  router.get("/:id", postController.getSinglePost.bind(postController));
+  router.get(
+    "/static",
+    authMiddleware("ADMIN" as UserRole),
+    postController.getStaticPosts.bind(postController)
+  );
 
   router.get(
     "/author/:authorId",
     authMiddleware("USER" as UserRole, "ADMIN" as UserRole),
     postController.getMyPosts.bind(postController)
   );
+
+  router.get("/:id", postController.getSinglePost.bind(postController));
 
   router.post(
     "/",
