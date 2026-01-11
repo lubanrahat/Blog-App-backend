@@ -138,6 +138,30 @@ class CommentController {
       });
     }
   }
+
+  public async moderateComment(req: Request, res: Response): Promise<Response> {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Comment id is required",
+      });
+    }
+    try {
+      const comment = await commentService.moderateComment(id as string, req.user?.id as string);
+
+      return res.status(200).json({
+        success: true,
+        message: "Comment moderated successfully",
+        data: comment,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message || "Failed to moderate comment",
+      });
+    }
+  }
 }
 
 export const commentController = new CommentController();

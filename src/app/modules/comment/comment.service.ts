@@ -119,6 +119,29 @@ class CommentService {
       },
     });
   }
+
+  public async moderateComment(commentId: string, authorId: string) {
+    const comment = await prisma.comment.findUnique({
+      where: {
+        id: commentId,
+      },
+    });
+    if (!comment) {
+      throw new Error("Comment not found");
+    }
+    if(comment.status === "APPROVED"){
+      throw new Error("Comment is already approved");
+    }
+    return prisma.comment.update({
+      where: {
+        id: commentId,
+      },
+      data: {
+        status: "APPROVED",
+      },
+    });
+  }
+
 }
 
 export const commentService = new CommentService();

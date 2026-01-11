@@ -36,5 +36,11 @@ export default function registerCommentRoutes(): Router {
     commentController.updateComment.bind(commentController)
   );
 
+  router.put(
+    "/moderate/:id",
+    authMiddleware(UserRole.ADMIN),
+    commentController.moderateComment.bind(commentController)
+  );
+
   return router;
 }
