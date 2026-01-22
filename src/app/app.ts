@@ -21,7 +21,7 @@ function createApp(): Application {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  app.use("/api/v1/health", registerHealthRoutes());
+  app.use(registerHealthRoutes());
   app.all("/api/auth/*splat", toNodeHandler(auth));
   app.use("/api/v1/post", registerPostRoutes());
   app.use("/api/v1/comment", registerCommentRoutes());

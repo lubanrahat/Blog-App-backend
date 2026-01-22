@@ -51,8 +51,8 @@ class PostController {
         req.query.idFeatured === "true"
           ? true
           : req.query.idFeatured === "false"
-          ? false
-          : undefined;
+            ? false
+            : undefined;
 
       const statusParam = req.query.status;
       const status: PostStatus | undefined =
@@ -64,11 +64,16 @@ class PostController {
       const authorId = req.query.authorId as string | undefined;
 
       const paginationOptions = paginationSortingHelper({
-        page: req.body.page != null ? Number(req.body.page) : undefined,
-        limit: req.body.limit != null ? Number(req.body.limit) : undefined,
-        sortBy: req.body.sortBy,
-        sortOrder: req.body.sortOrder,
+        page: req.query.page != null ? Number(req.query.page) : undefined,
+        limit: req.query.limit != null ? Number(req.query.limit) : undefined,
+        sortBy: req.query.sortBy != null ? String(req.query.sortBy) : undefined,
+        sortOrder:
+          req.query.sortOrder != null
+            ? (req.query.sortOrder as "asc" | "desc")
+            : undefined,
       });
+
+      console.log("Limit: ", req.query);
 
       const posts = await postService.getAllPosts(
         search,
@@ -80,7 +85,7 @@ class PostController {
         paginationOptions.limit,
         paginationOptions.skip,
         paginationOptions.sortBy,
-        paginationOptions.sortOrder
+        paginationOptions.sortOrder,
       );
 
       return res.status(200).json({
@@ -161,13 +166,13 @@ class PostController {
           success: false,
           message: "Unauthorized",
         });
-      } 
+      }
 
       const posts = await postService.updatePost(
         postId,
         req.body,
         req.user?.id as string,
-        isAdmin
+        isAdmin,
       );
 
       return res.status(200).json({
@@ -200,9 +205,13 @@ class PostController {
           success: false,
           message: "Unauthorized",
         });
-      } 
+      }
 
-      const posts = await postService.deletePost(postId, req.user?.id as string, isAdmin);
+      const posts = await postService.deletePost(
+        postId,
+        req.user?.id as string,
+        isAdmin,
+      );
 
       return res.status(200).json({
         success: true,

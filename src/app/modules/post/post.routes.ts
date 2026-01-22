@@ -24,7 +24,7 @@ export default function registerPostRoutes(): Router {
 
   router.post(
     "/",
-    authMiddleware("USER" as UserRole),
+    authMiddleware("USER" as UserRole, "ADMIN" as UserRole),
     postController.createPost.bind(postController)
   );
 
